@@ -233,9 +233,13 @@ export const CartDrawerModal: React.FC<CartDrawerModalProps> = ({
                   onDragEnd={handleDragEnd}
                   className={`relative p-3.5 rounded-2xl transition-all duration-200 flex items-center gap-3 border ${
                     dragOverIndex === index
-                      ? 'border-2 border-dashed border-amber-400 bg-amber-950/40 scale-102 shadow-lg'
+                      ? 'border-2 border-dashed border-amber-400 bg-amber-950/40 scale-102 shadow-lg z-10'
+                      : draggedIndex === index
+                      ? 'opacity-60 scale-95 border-amber-400 bg-slate-800'
                       : isArrangeMode
-                      ? 'bg-slate-800/90 border-2 border-amber-400 shadow-md ring-2 ring-amber-400/30'
+                      ? `bg-slate-800/95 border-2 border-amber-400 shadow-md ring-2 ring-amber-400/30 ${
+                          index % 2 === 0 ? 'animate-jiggle-shake' : 'animate-jiggle-shake-alt'
+                        } cursor-grab active:cursor-grabbing select-none`
                       : 'bg-slate-850/60 hover:bg-slate-850/90 border-white/[0.08]'
                   }`}
                 >
