@@ -10,6 +10,7 @@ import {
   updateCloudOrderStatus, 
   pushWaiterCallToCloud, 
   resolveWaiterCallInCloud,
+  fetchActiveWaiterCallsFromCloud,
   pushFeedbackToCloud 
 } from './supabaseClient';
 
@@ -209,8 +210,55 @@ export const storageService = {
       resolveWaiterCallInCloud(targetAlert.tableNumber, targetAlert.type).catch((err) => 
         console.warn('[Cloud Sync] Resolve alert cloud error:', err)
       );
+      if (targetAlert.id.startsWith('alert-cloud-')) {
+        resolveWaiterCallInCloud(targetAlert.id).catch((err) => 
+          console.warn('[Cloud Sync] Resolve alert cloud ID error:', err)
+        );
+      }
     }
     return updated;
+  },
+
+  async syncAlertsWithCloud(): Promise<StaffAlert[]> {
+    try {
+      const cloudData = await fetchActiveWaiterCallsFromCloud();
+      if (cloudData && Array.isArray(cloudData)) {
+        const localAlerts = this.getStaffAlerts();
+        
+        // Map active cloud calls to StaffAlert format
+        const cloudAlerts: StaffAlert[] = cloudData.map((c) => ({
+          id: `alert-cloud-${c.id}`,
+          tableNumber: c.table_number,
+          type: (c.call_type as StaffAlert['type']) || 'Need Assistance',
+          timestamp: c.created_at || new Date().toISOString(),
+          status: 'PENDING'
+        }));
+
+        // Merge: Cloud active alerts take precedence
+        const merged: StaffAlert[] = [...cloudAlerts];
+
+        // Also keep any local pending alerts not in cloud yet
+        localAlerts.forEach((la) => {
+          if (la.status === 'PENDING' && !merged.some((ca) => ca.tableNumber === la.tableNumber && ca.type === la.type)) {
+            merged.push(la);
+          }
+        });
+
+        // Keep resolved alerts for history
+        localAlerts.forEach((la) => {
+          if (la.status === 'RESOLVED' && !merged.some((m) => m.id === la.id)) {
+            merged.push(la);
+          }
+        });
+
+        localStorage.setItem(STORAGE_KEYS.STAFF_ALERTS, JSON.stringify(merged));
+        this.broadcast({ type: 'ALERT_CREATED', payload: merged });
+        return merged;
+      }
+    } catch (e) {
+      console.warn('Failed to sync alerts with cloud:', e);
+    }
+    return this.getStaffAlerts();
   },
 
   getFeedback(): Feedback[] {

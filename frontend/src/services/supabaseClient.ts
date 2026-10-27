@@ -177,26 +177,30 @@ export async function pushWaiterCallToCloud(tableNumber: number, callType: strin
 /**
  * Mark Waiter Call as Resolved in Supabase Cloud
  */
-export async function resolveWaiterCallInCloud(tableNumber: number, callType?: string): Promise<void> {
+export async function resolveWaiterCallInCloud(tableNumberOrId: number | string, callType?: string): Promise<void> {
   try {
     let query = supabase
       .from('waiter_calls')
       .update({ 
         status: 'RESOLVED',
         resolved_at: new Date().toISOString()
-      })
-      .eq('table_number', tableNumber)
-      .eq('status', 'ACTIVE');
+      });
 
-    if (callType) {
-      query = query.eq('call_type', callType);
+    if (typeof tableNumberOrId === 'string' && tableNumberOrId.includes('-')) {
+      const cleanId = tableNumberOrId.replace('alert-cloud-', '');
+      query = query.eq('id', cleanId);
+    } else {
+      query = query.eq('table_number', Number(tableNumberOrId)).eq('status', 'ACTIVE');
+      if (callType) {
+        query = query.eq('call_type', callType);
+      }
     }
 
     const { error } = await query;
     if (error) {
       console.warn('[Cloud DB] Resolve waiter call error:', error.message);
     } else {
-      console.log(`[Cloud DB] Waiter Call for Table ${tableNumber} marked RESOLVED in Supabase!`);
+      console.log(`[Cloud DB] Waiter Call marked RESOLVED in Supabase!`);
     }
   } catch (err) {
     console.warn('[Cloud DB] Resolve waiter call cloud error:', err);

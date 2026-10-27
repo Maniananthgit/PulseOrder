@@ -190,10 +190,9 @@ export const KitchenDisplay: React.FC = () => {
     return stored.length > 0 ? stored : staffAlerts;
   });
   const prevAlertCountRef = useRef(liveAlerts.filter(a => a.status === 'PENDING').length);
-  const [activeAlertBanner, setActiveAlertBanner] = useState<StaffAlert | null>(() => {
-    const pending = storageService.getStaffAlerts().find(a => a.status === 'PENDING');
-    return pending || null;
-  });
+  const [activeAlertBanner, setActiveAlertBanner] = useState<StaffAlert | null>(null);
+  const [dismissedAlertId, setDismissedAlertId] = useState<string | null>(null);
+  const chimedAlertIdsRef = useRef<Set<string>>(new Set());
 
   // Active logged-in user from database / authService
   const [currentUser, setCurrentUser] = useState<UserCredential | null>(() => {
@@ -231,6 +230,18 @@ export const KitchenDisplay: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
+  // Immediate Cloud Synchronization on Mount
+  useEffect(() => {
+    storageService.syncAlertsWithCloud().then((synced) => {
+      setLiveAlerts(synced);
+      const pending = synced.filter(a => a.status === 'PENDING');
+      if (pending.length > 0 && isAudioEnabled) {
+        pending.forEach(p => chimedAlertIdsRef.current.add(p.id));
+        playWaiterCallBell();
+      }
+    });
+  }, [isAudioEnabled]);
+
   // Real-Time Supabase Cloud Realtime Subscription for Waiter Calls
   useEffect(() => {
     const unsubCloud = subscribeToCloudWaiterCalls((payload) => {
@@ -250,6 +261,7 @@ export const KitchenDisplay: React.FC = () => {
           storageService.saveStaffAlerts(updated);
           setLiveAlerts(updated);
           setActiveAlertBanner(newAlert);
+          setDismissedAlertId(null);
           if (isAudioEnabled) playWaiterCallBell();
         }
       } else if (payload.eventType === 'UPDATE' && payload.new && payload.new.status === 'RESOLVED') {
@@ -267,7 +279,7 @@ export const KitchenDisplay: React.FC = () => {
     };
   }, [isAudioEnabled]);
 
-  // Sync pulse (1-second heartbeat across tabs and windows)
+  // Sync pulse (1-second heartbeat across tabs and windows + 2.5s cloud polling)
   useEffect(() => {
     const syncPulse = () => {
       // 1. Orders sync
@@ -278,16 +290,22 @@ export const KitchenDisplay: React.FC = () => {
       prevCountRef.current = stored.length;
       setLiveOrders(stored);
 
-      // 2. Staff / Waiter Assistance Alerts sync
+      // 2. Staff / Waiter Assistance Alerts sync from local storage
       const storedAlerts = storageService.getStaffAlerts();
       const currentPending = storedAlerts.filter(a => a.status === 'PENDING');
+      
+      // Check for un-chimed alerts
+      if (isAudioEnabled) {
+        currentPending.forEach(a => {
+          if (!chimedAlertIdsRef.current.has(a.id)) {
+            chimedAlertIdsRef.current.add(a.id);
+            playWaiterCallBell();
+          }
+        });
+      }
+
       if (currentPending.length > prevAlertCountRef.current) {
-        // Customer requested waiter assistance! Play crystal chime and display banner
-        if (isAudioEnabled) playWaiterCallBell();
-        const newest = currentPending[0];
-        if (newest) setActiveAlertBanner(newest);
-      } else if (currentPending.length === 0 && activeAlertBanner) {
-        setActiveAlertBanner(null);
+        setDismissedAlertId(null);
       }
       prevAlertCountRef.current = currentPending.length;
       setLiveAlerts(storedAlerts);
@@ -295,6 +313,14 @@ export const KitchenDisplay: React.FC = () => {
 
     syncPulse();
     const interval = setInterval(syncPulse, 1000);
+
+    // Periodic cloud poll to guarantee cross-device & separate browser sync
+    const cloudSyncInterval = setInterval(() => {
+      storageService.syncAlertsWithCloud().then((synced) => {
+        setLiveAlerts(synced);
+      });
+    }, 2500);
+
     const unsubscribe = storageService.subscribe((msg) => {
       syncPulse();
       if (msg.type === 'ALERT_CREATED' && isAudioEnabled) {
@@ -304,19 +330,22 @@ export const KitchenDisplay: React.FC = () => {
 
     return () => {
       clearInterval(interval);
+      clearInterval(cloudSyncInterval);
       unsubscribe();
     };
-  }, [isAudioEnabled, activeAlertBanner]);
+  }, [isAudioEnabled]);
 
   // Handle resolving alert
   const handleResolveAlert = (id: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     resolveStaffAlert(id);
-    const updated = storageService.getStaffAlerts();
+    const updated = storageService.resolveStaffAlert(id);
     setLiveAlerts(updated);
     if (activeAlertBanner?.id === id) {
-      const remaining = updated.filter(a => a.status === 'PENDING' && a.id !== id);
-      setActiveAlertBanner(remaining.length > 0 ? remaining[0] : null);
+      setActiveAlertBanner(null);
+    }
+    if (dismissedAlertId === id) {
+      setDismissedAlertId(null);
     }
     showToast('Waiter call marked attended & resolved in cloud');
   };
@@ -350,6 +379,16 @@ export const KitchenDisplay: React.FC = () => {
   const displayAlerts = liveAlerts.length > 0 ? liveAlerts : staffAlerts;
   const pendingAlerts = displayAlerts.filter((a) => a.status === 'PENDING');
   const soldOutItems = menuItems.filter((i) => !i.isAvailable);
+
+  // Active banner alert to feature on top of the dashboard
+  const bannerAlert = useMemo(() => {
+    if (pendingAlerts.length === 0) return null;
+    if (activeAlertBanner && activeAlertBanner.status === 'PENDING' && activeAlertBanner.id !== dismissedAlertId) {
+      return activeAlertBanner;
+    }
+    const nonDismissed = pendingAlerts.filter(a => a.id !== dismissedAlertId);
+    return nonDismissed.length > 0 ? nonDismissed[0] : pendingAlerts[0];
+  }, [pendingAlerts, activeAlertBanner, dismissedAlertId]);
 
   const counts = useMemo(() => {
     return {
@@ -629,7 +668,7 @@ export const KitchenDisplay: React.FC = () => {
         {/* ========================================================= */}
         {/* REAL-TIME WAITER ASSISTANCE NOTIFICATION BANNER           */}
         {/* ========================================================= */}
-        {activeAlertBanner && activeAlertBanner.status === 'PENDING' && (
+        {bannerAlert && bannerAlert.status === 'PENDING' && (
           <div className="mt-5 p-4 rounded-2xl bg-gradient-to-r from-rose-500/15 via-amber-500/15 to-orange-500/15 border-2 border-rose-500/60 dark:border-rose-400/60 shadow-xl shadow-rose-500/10 backdrop-blur-md animate-in slide-in-from-top duration-300 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-3.5">
               <div className="relative shrink-0">
@@ -641,14 +680,14 @@ export const KitchenDisplay: React.FC = () => {
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="px-3 py-1 rounded-full text-xs font-black bg-rose-600 text-white shadow-sm tracking-wide">
-                    TABLE {activeAlertBanner.tableNumber}
+                    TABLE {bannerAlert.tableNumber}
                   </span>
                   <span className="text-sm font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
-                    {activeAlertBanner.type === 'Need Water' && <Droplet className="w-4 h-4 text-blue-500 fill-blue-500" />}
-                    {activeAlertBanner.type === 'Need Bill' && <Receipt className="w-4 h-4 text-emerald-500" />}
-                    {activeAlertBanner.type === 'Need Assistance' && <HelpCircle className="w-4 h-4 text-amber-500" />}
-                    {activeAlertBanner.type === 'Other' && <UtensilsCrossed className="w-4 h-4 text-purple-500" />}
-                    Customer Requested: <span className="underline decoration-rose-500 underline-offset-2 font-black">{activeAlertBanner.type}</span>
+                    {bannerAlert.type === 'Need Water' && <Droplet className="w-4 h-4 text-blue-500 fill-blue-500" />}
+                    {bannerAlert.type === 'Need Bill' && <Receipt className="w-4 h-4 text-emerald-500" />}
+                    {bannerAlert.type === 'Need Assistance' && <HelpCircle className="w-4 h-4 text-amber-500" />}
+                    {bannerAlert.type === 'Other' && <UtensilsCrossed className="w-4 h-4 text-purple-500" />}
+                    Customer Requested: <span className="underline decoration-rose-500 underline-offset-2 font-black">{bannerAlert.type}</span>
                   </span>
                   <span className="text-[11px] px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/30 flex items-center gap-1">
                     <Sparkles className="w-3 h-3" /> Live Cloud Alert
@@ -656,7 +695,7 @@ export const KitchenDisplay: React.FC = () => {
                 </div>
                 <div className="text-xs text-slate-600 dark:text-slate-300 mt-1 flex items-center gap-3 flex-wrap font-medium">
                   <span>
-                    Assigned Server: <strong className="text-slate-900 dark:text-white font-bold">{getAssignedWaiter(activeAlertBanner.tableNumber).name}</strong> ({getAssignedWaiter(activeAlertBanner.tableNumber).code})
+                    Assigned Server: <strong className="text-slate-900 dark:text-white font-bold">{getAssignedWaiter(bannerAlert.tableNumber).name}</strong> ({getAssignedWaiter(bannerAlert.tableNumber).code})
                   </span>
                   <span className="opacity-40">•</span>
                   <span>Requested: <strong className="text-rose-600 dark:text-rose-400 font-bold">Just now</strong></span>
@@ -666,7 +705,7 @@ export const KitchenDisplay: React.FC = () => {
 
             <div className="flex items-center gap-2 self-end md:self-auto shrink-0">
               <button
-                onClick={(e) => handleResolveAlert(activeAlertBanner.id, e)}
+                onClick={(e) => handleResolveAlert(bannerAlert.id, e)}
                 className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold shadow-md hover:shadow-emerald-600/30 flex items-center gap-1.5 transition-all cursor-pointer active:scale-95"
               >
                 <CheckCircle2 className="w-4 h-4" />
@@ -679,7 +718,10 @@ export const KitchenDisplay: React.FC = () => {
                 View All ({pendingAlerts.length})
               </button>
               <button
-                onClick={() => setActiveAlertBanner(null)}
+                onClick={() => {
+                  setDismissedAlertId(bannerAlert.id);
+                  setActiveAlertBanner(null);
+                }}
                 className="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                 title="Dismiss banner"
               >
