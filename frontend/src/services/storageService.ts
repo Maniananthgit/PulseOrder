@@ -9,6 +9,7 @@ import {
   pushOrderToCloud, 
   updateCloudOrderStatus, 
   pushWaiterCallToCloud, 
+  resolveWaiterCallInCloud,
   pushFeedbackToCloud 
 } from './supabaseClient';
 
@@ -194,8 +195,21 @@ export const storageService = {
 
   resolveStaffAlert(id: string) {
     const alerts = this.getStaffAlerts();
-    const updated = alerts.map((a) => a.id === id ? { ...a, status: 'RESOLVED' as const } : a);
+    let targetAlert: StaffAlert | undefined;
+    const updated = alerts.map((a) => {
+      if (a.id === id) {
+        targetAlert = a;
+        return { ...a, status: 'RESOLVED' as const };
+      }
+      return a;
+    });
     this.saveStaffAlerts(updated);
+    this.broadcast({ type: 'ALERT_RESOLVED', payload: updated });
+    if (targetAlert) {
+      resolveWaiterCallInCloud(targetAlert.tableNumber, targetAlert.type).catch((err) => 
+        console.warn('[Cloud Sync] Resolve alert cloud error:', err)
+      );
+    }
     return updated;
   },
 

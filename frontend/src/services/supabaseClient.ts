@@ -168,11 +168,89 @@ export async function pushWaiterCallToCloud(tableNumber: number, callType: strin
         call_type: callType,
         status: 'ACTIVE'
       });
-    console.log(`[Cloud DB] Waiter Call from Table ${tableNumber} synced to Supabase!`);
+    console.log(`[Cloud DB] Waiter Call from Table ${tableNumber} (${callType}) synced to Supabase!`);
   } catch (err) {
     console.warn('[Cloud DB] Waiter call cloud sync error:', err);
   }
 }
+
+/**
+ * Mark Waiter Call as Resolved in Supabase Cloud
+ */
+export async function resolveWaiterCallInCloud(tableNumber: number, callType?: string): Promise<void> {
+  try {
+    let query = supabase
+      .from('waiter_calls')
+      .update({ 
+        status: 'RESOLVED',
+        resolved_at: new Date().toISOString()
+      })
+      .eq('table_number', tableNumber)
+      .eq('status', 'ACTIVE');
+
+    if (callType) {
+      query = query.eq('call_type', callType);
+    }
+
+    const { error } = await query;
+    if (error) {
+      console.warn('[Cloud DB] Resolve waiter call error:', error.message);
+    } else {
+      console.log(`[Cloud DB] Waiter Call for Table ${tableNumber} marked RESOLVED in Supabase!`);
+    }
+  } catch (err) {
+    console.warn('[Cloud DB] Resolve waiter call cloud error:', err);
+  }
+}
+
+/**
+ * Fetch all active waiter calls from Supabase Cloud
+ */
+export async function fetchActiveWaiterCallsFromCloud(): Promise<any[] | null> {
+  try {
+    const { data, error } = await supabase
+      .from('waiter_calls')
+      .select('*')
+      .eq('status', 'ACTIVE')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.warn('[Cloud DB] Fetch waiter calls error:', error.message);
+      return null;
+    }
+    return data;
+  } catch (err) {
+    console.warn('[Cloud DB] Fetch waiter calls cloud error:', err);
+    return null;
+  }
+}
+
+/**
+ * Real-Time Supabase Subscription for Waiter Calls
+ */
+export function subscribeToCloudWaiterCalls(onCallUpdate: (payload: any) => void) {
+  try {
+    const channel = supabase
+      .channel('kiosk_waiter_calls_live')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'waiter_calls' },
+        (payload) => {
+          console.log('[Cloud DB Realtime] Waiter call event:', payload);
+          onCallUpdate(payload);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  } catch (err) {
+    console.warn('[Cloud DB Realtime] Subscription not supported in offline mode:', err);
+    return () => {};
+  }
+}
+
 
 /**
  * Push Dining Feedback to Supabase Cloud
