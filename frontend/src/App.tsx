@@ -19,6 +19,7 @@ import { LanguageSelectionModal } from './components/kiosk/LanguageSelectionModa
 import { LanguageEntryScreen } from './components/kiosk/LanguageEntryScreen';
 import { CustomerTableAllocationScreen } from './components/kiosk/CustomerTableAllocationScreen';
 import CallWaiterModal from './components/common/CallWaiterModal';
+import { AIChatModal } from './components/kiosk/AIChatModal';
 import { StaffLoginModal, StaffUser } from './components/auth/StaffLoginModal';
 import { authService } from './services/authService';
 import { MenuItem, Order } from './types';
@@ -77,6 +78,7 @@ const MainAppContent: React.FC = () => {
   const [isEntertainmentOpen, setIsEntertainmentOpen] = useState(false);
   const [isFinishMealOpen, setIsFinishMealOpen] = useState(false);
   const [isCallWaiterOpen, setIsCallWaiterOpen] = useState(false);
+  const [isAIChatOpen, setIsAIChatOpen] = useState(false);
   const [activeCompletedOrder, setActiveCompletedOrder] = useState<Order | null>(null);
 
   // All active orders for this specific table (for multi-order tracking)
@@ -148,6 +150,7 @@ const MainAppContent: React.FC = () => {
                   onOpenTrackOrder={() => setIsTrackerOpen(true)}
                   onOpenEntertainment={() => setIsEntertainmentOpen(true)}
                   onCallWaiter={() => setIsCallWaiterOpen(true)}
+                  onOpenAIChat={() => setIsAIChatOpen(true)}
                 />
 
                 <MenuScreen
@@ -155,6 +158,7 @@ const MainAppContent: React.FC = () => {
                   onOpenCart={() => setIsCartOpen(true)}
                   onOpenOrderTracker={() => setIsTrackerOpen(true)}
                   onOpenEntertainment={() => setIsEntertainmentOpen(true)}
+                  onOpenAIChat={() => setIsAIChatOpen(true)}
                 />
               </div>
             )}
@@ -240,6 +244,15 @@ const MainAppContent: React.FC = () => {
       <CallWaiterModal
         isOpen={isCallWaiterOpen}
         onClose={() => setIsCallWaiterOpen(false)}
+      />
+
+      {/* Ember AI Concierge Dining Assistant Modal */}
+      <AIChatModal
+        isOpen={isAIChatOpen}
+        onClose={() => setIsAIChatOpen(false)}
+        onOpenItemDetail={(item) => setSelectedItemForDetail(item)}
+        onOpenOrderTracker={() => setIsTrackerOpen(true)}
+        onCallWaiterModal={() => setIsCallWaiterOpen(true)}
       />
 
       <LanguageSelectionModal

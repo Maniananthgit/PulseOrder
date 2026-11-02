@@ -22,7 +22,8 @@ import {
   Bell,
   Star,
   Zap,
-  Heart
+  Heart,
+  Sparkles
 } from 'lucide-react';
 import { PromoAdBanner } from './PromoAdBanner';
 import { getAssignedWaiter } from '../../utils/waiterAssignment';
@@ -33,13 +34,15 @@ interface MenuScreenProps {
   onOpenCart: () => void;
   onOpenOrderTracker?: () => void;
   onOpenEntertainment?: () => void;
+  onOpenAIChat?: () => void;
 }
 
 export const MenuScreen: React.FC<MenuScreenProps> = ({ 
   onSelectItem, 
   onOpenCart: _onOpenCart,
   onOpenOrderTracker,
-  onOpenEntertainment 
+  onOpenEntertainment,
+  onOpenAIChat
 }) => {
   const { 
     menuItems, 
@@ -610,6 +613,19 @@ export const MenuScreen: React.FC<MenuScreenProps> = ({
       {/* 7. FLOATING QUICK ACTION DOCK (Show Only Bottom - "its perfect place") */}
       <aside aria-label="Quick Actions Dock" className="fixed bottom-6 right-6 z-40 flex items-center gap-2 p-1.5 sm:p-2 rounded-full bg-slate-950/95 dark:bg-slate-900/95 backdrop-blur-md border border-amber-500/30 shadow-[0_10px_35px_rgba(0,0,0,0.4)] animate-fade-in select-none">
         
+        {/* Ember AI Concierge Floating Button */}
+        {onOpenAIChat && (
+          <button
+            type="button"
+            onClick={onOpenAIChat}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-amber-500/20 hover:from-amber-500/30 hover:to-yellow-500/30 text-amber-300 border border-amber-400/40 transition-all active:scale-95 cursor-pointer shadow-md shadow-amber-500/10"
+            title="Ask Ember AI Concierge about Signatures, Ratings, Shop Timings"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+            <span className="font-extrabold">Ember AI</span>
+          </button>
+        )}
+
         {/* Track Order Floating Button */}
         {onOpenOrderTracker && (
           <button

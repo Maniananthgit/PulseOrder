@@ -6,7 +6,8 @@ import {
   ArrowLeft,
   Sun,
   Moon,
-  ConciergeBell
+  ConciergeBell,
+  Sparkles
 } from 'lucide-react';
 import royalEmberLogo from '../../assets/royal_ember_logo.jpg';
 import { getAssignedWaiter } from '../../utils/waiterAssignment';
@@ -18,12 +19,14 @@ interface HeaderProps {
   onOpenTrackOrder?: () => void;
   onOpenEntertainment?: () => void;
   onCallWaiter?: () => void;
+  onOpenAIChat?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({ 
   onBackToWelcome, 
   onOpenCart, 
-  showBack = false 
+  showBack = false,
+  onOpenAIChat
 }) => {
   const { 
     tableNumber, 
@@ -120,6 +123,19 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 hidden md:inline">Server:</span>
             <span className="text-xs font-black text-amber-300">{assignedWaiter.fullName}</span>
           </div>
+
+          {/* Ember AI Concierge Trigger */}
+          {onOpenAIChat && (
+            <button
+              type="button"
+              onClick={onOpenAIChat}
+              className="flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-full bg-gradient-to-r from-amber-500/15 via-yellow-500/10 to-amber-500/15 hover:bg-amber-500/25 border border-amber-400/40 text-amber-300 shadow-sm active:scale-95 transition-all cursor-pointer shrink-0"
+              title="Ask Ember AI Concierge (Signatures, Ratings, Timings)"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+              <span className="text-xs font-black tracking-wide">Ember AI</span>
+            </button>
+          )}
 
           {/* Cart Trigger Button (Vibrant Culinary Amber Pill with Always-Visible Label) */}
           {onOpenCart && (
