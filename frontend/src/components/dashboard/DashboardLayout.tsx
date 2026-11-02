@@ -28,7 +28,8 @@ import {
   AlertTriangle,
   ArrowRight,
   PanelLeftClose,
-  PanelLeftOpen
+  PanelLeftOpen,
+  ScanFace
 } from 'lucide-react';
 
 export type DashboardTab = 
@@ -39,6 +40,7 @@ export type DashboardTab =
   | 'payments'
   | 'reports'
   | 'staff'
+  | 'attendance'
   | 'branches'
   | 'notifications'
   | 'audit'
@@ -63,6 +65,7 @@ export const SIDEBAR_NAV_ITEMS: NavItem[] = [
   { id: 'payments', label: 'Payments', icon: CreditCard },
   { id: 'reports', label: 'Reports & Analytics', icon: BarChart3 },
   { id: 'staff', label: 'Staff & Roles', icon: Users },
+  { id: 'attendance', label: 'Employee Attendance', icon: ScanFace, badge: 'Live', badgeColor: 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' },
   { id: 'branches', label: 'Branch Management', icon: Store },
   { id: 'notifications', label: 'Notifications', icon: Bell, badge: '3', badgeColor: 'bg-amber-50 text-amber-600 border border-amber-200' },
   { id: 'audit', label: 'Audit Logs', icon: ShieldCheck },

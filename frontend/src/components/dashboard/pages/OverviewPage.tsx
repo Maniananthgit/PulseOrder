@@ -18,7 +18,8 @@ import {
   Calendar,
   Layers,
   ChevronRight,
-  Filter
+  Filter,
+  ScanFace
 } from 'lucide-react';
 import type { DashboardTab } from '../DashboardLayout';
 
@@ -622,6 +623,46 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Right Card 5: Staff Attendance Live Widget */}
+          <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
+            <div className="flex items-center justify-between pb-2 mb-3 border-b border-slate-100 dark:border-slate-800">
+              <span className="font-extrabold text-xs text-slate-900 dark:text-white font-display flex items-center gap-1.5">
+                <ScanFace className="w-4 h-4 text-amber-500" />
+                <span>Live Staff Attendance</span>
+              </span>
+              <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 rounded-full">
+                92% On Duty
+              </span>
+            </div>
+
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500 dark:text-slate-400">Present Today:</span>
+                <span className="font-bold text-slate-900 dark:text-white font-mono">11 Staff</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500 dark:text-slate-400">Late Arrivals:</span>
+                <span className="font-bold text-amber-500 font-mono">1 Staff</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500 dark:text-slate-400">Biometric Sync:</span>
+                <span className="font-bold text-emerald-500 flex items-center gap-1 text-[11px]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Cloud Realtime
+                </span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => onNavigateTab('attendance')}
+              className="w-full mt-3 py-2 text-center text-xs font-bold text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40 rounded-xl border border-amber-200 dark:border-amber-800 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+            >
+              <span>Open Attendance Portal</span>
+              <ArrowRight className="w-3 h-3" />
+            </button>
           </div>
 
         </div>

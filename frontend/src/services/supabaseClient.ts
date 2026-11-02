@@ -389,4 +389,85 @@ export async function deleteUserFromCloud(username: string): Promise<boolean> {
   }
 }
 
+/**
+ * Push Employee Attendance Record to Cloud PostgreSQL Database
+ */
+export async function pushAttendanceToCloud(record: {
+  id: string;
+  employee_id: string;
+  employee_code: string;
+  employee_name: string;
+  department: string;
+  role: string;
+  date: string;
+  clock_in_time: string | null;
+  clock_out_time: string | null;
+  status: string;
+  verification_method: string;
+  location?: string;
+  terminal_id?: string;
+  total_work_hours?: number;
+  notes?: string;
+  verified_at: string;
+}): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from('employee_attendance')
+      .upsert({
+        id: record.id,
+        branch_id: DEFAULT_BRANCH_ID,
+        employee_id: record.employee_id,
+        employee_code: record.employee_code,
+        employee_name: record.employee_name,
+        department: record.department,
+        role: record.role,
+        attendance_date: record.date,
+        clock_in_time: record.clock_in_time,
+        clock_out_time: record.clock_out_time,
+        status: record.status,
+        verification_method: record.verification_method,
+        location: record.location || 'Indiranagar Flagship - Main Kiosk',
+        terminal_id: record.terminal_id || 'KIOSK-TERMINAL-01',
+        total_work_hours: record.total_work_hours || 0,
+        notes: record.notes || null,
+        verified_at: record.verified_at,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'id' });
+
+    if (error) {
+      // If table does not exist or has a schema mismatch in cloud, log warning and let local-first storage handle
+      console.warn('[Cloud DB] Attendance cloud sync warning:', error.message);
+      return false;
+    }
+    console.log(`[Cloud DB] Attendance for ${record.employee_name} synced to PostgreSQL!`);
+    return true;
+  } catch (err) {
+    console.warn('[Cloud DB] Attendance cloud sync bypassed (local-first):', err);
+    return false;
+  }
+}
+
+/**
+ * Fetch Today's Attendance Records from Cloud PostgreSQL
+ */
+export async function fetchAttendanceFromCloud(dateStr?: string): Promise<any[] | null> {
+  try {
+    const queryDate = dateStr || new Date().toISOString().split('T')[0];
+    const { data, error } = await supabase
+      .from('employee_attendance')
+      .select('*')
+      .eq('attendance_date', queryDate);
+
+    if (error) {
+      console.warn('[Cloud DB] Fetch attendance error:', error.message);
+      return null;
+    }
+    return data;
+  } catch (err) {
+    console.warn('[Cloud DB] Fetch attendance bypassed:', err);
+    return null;
+  }
+}
+
+
 

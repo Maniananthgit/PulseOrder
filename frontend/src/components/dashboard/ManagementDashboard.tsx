@@ -7,6 +7,7 @@ import { KiosksPage } from './pages/KiosksPage';
 import { PaymentsPage } from './pages/PaymentsPage';
 import { ReportsPage } from './pages/ReportsPage';
 import { StaffPage } from './pages/StaffPage';
+import { AttendancePage } from './pages/AttendancePage';
 import { BranchesPage } from './pages/BranchesPage';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { AuditLogsPage } from './pages/AuditLogsPage';
@@ -55,6 +56,10 @@ export const ManagementDashboard: React.FC = () => {
 
       {currentTab === 'staff' && (
         <StaffPage />
+      )}
+
+      {currentTab === 'attendance' && (
+        <AttendancePage selectedBranch={selectedBranch} />
       )}
 
       {currentTab === 'branches' && (
