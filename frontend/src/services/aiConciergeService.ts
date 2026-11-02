@@ -437,7 +437,7 @@ export const processCustomerQuery = (
   return {
     id: `ai-${Date.now()}`,
     sender: 'ai',
-    text: `👑 **Welcome to Ember AI Concierge**\n\nI am your dedicated Royal Ember dining assistant for Table ${tableNumber}. I specialize in our culinary creations, signature dishes, customer ratings, ingredients, and restaurant operations.\n\nI can only answer questions related to our restaurant and services. Here are the questions I can help you with:`,
+    text: `👑 **Welcome to Kio AI**\n\nI am **Kio**, your dedicated Royal Ember dining assistant for Table ${tableNumber}. I specialize in our culinary creations, signature dishes, customer ratings, ingredients, and restaurant operations.\n\nI can only answer questions related to our restaurant and services. Here are the questions I can help you with:`,
     isFallback: true,
     suggestedQuestions: AVAILABLE_QUESTION_PROMPTS,
     timestamp

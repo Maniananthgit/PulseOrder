@@ -64,7 +64,7 @@ export const AIChatModal: React.FC<AIChatModalProps> = ({
     {
       id: 'welcome-1',
       sender: 'ai',
-      text: `👑 **Namaste & Welcome to Table ${tableNumber}!**\n\nI am **Ember AI Concierge**, your dedicated culinary & dining assistant at Royal Ember.\n\nYou can ask me about our **Signature creations**, **Top-rated dishes (4.8★+)**, **Shop opening & closing hours**, dietary customizations, or table assistance. How may I delight your palate today?`,
+      text: `👑 **Namaste & Welcome to Table ${tableNumber}!**\n\nI am **Kio**, your dedicated AI dining assistant at Royal Ember.\n\nYou can ask me about our **Signature creations**, **Top-rated dishes (4.8★+)**, **Shop opening & closing hours**, dietary customizations, or table assistance. How may I assist you today?`,
       suggestedQuestions: [
         '👑 Which foods are your Signatures?',
         '⭐ Which foods have excellent rating?',
@@ -125,7 +125,7 @@ export const AIChatModal: React.FC<AIChatModalProps> = ({
   // Quick add item to cart from AI recommendation
   const handleQuickAdd = (item: MenuItem, e: React.MouseEvent) => {
     e.stopPropagation();
-    addToCart(item, 'Mild', [], 'Ordered via Ember AI Concierge', 1);
+    addToCart(item, 'Mild', [], 'Ordered via Kio AI', 1);
     setAddedItemIds(prev => ({ ...prev, [item.id]: true }));
     showToast(`✨ Added 1× ${item.name} (₹${item.price}) to cart!`);
 
@@ -156,7 +156,7 @@ export const AIChatModal: React.FC<AIChatModalProps> = ({
   // Reset conversation to fresh start
   const handleResetChat = () => {
     setMessages(initialMessages);
-    showToast('🔄 Ember AI conversation cleared.');
+    showToast('🔄 Kio conversation cleared.');
   };
 
   return (
@@ -171,10 +171,10 @@ export const AIChatModal: React.FC<AIChatModalProps> = ({
         {/* 1. CHATBOX HEADER: Branded Name & Status */}
         <div className="bg-gradient-to-b from-amber-950/40 via-slate-900 to-slate-900 p-4 sm:p-5 border-b border-white/[0.08] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            {/* Luxury Avatar Badge */}
+            {/* High-Tech AI Bot Avatar Badge */}
             <div className="relative">
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-600 via-amber-400 to-yellow-300 text-slate-950 flex items-center justify-center shadow-lg shadow-amber-500/30 border border-amber-300/40">
-                <Sparkles className="w-6 h-6 stroke-[2.5]" />
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-violet-600 via-indigo-600 to-amber-400 text-white flex items-center justify-center shadow-lg shadow-violet-500/30 border border-violet-400/40">
+                <Bot className="w-6 h-6 stroke-[2.5]" />
               </div>
               <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-slate-900" />
             </div>
@@ -182,10 +182,10 @@ export const AIChatModal: React.FC<AIChatModalProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 {/* Official Chatbox Name */}
-                <h3 className="font-display font-black text-base sm:text-lg text-white tracking-tight flex items-center gap-1.5">
-                  <span>Ember AI Concierge</span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-400/15 text-amber-300 border border-amber-400/30">
-                    Kiosk AI
+                <h3 className="font-display font-black text-base sm:text-lg text-white tracking-tight flex items-center gap-2">
+                  <span>Kio</span>
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-violet-500/20 to-amber-500/20 text-amber-300 border border-amber-400/40">
+                    AI Chatbox
                   </span>
                 </h3>
               </div>
@@ -444,7 +444,7 @@ export const AIChatModal: React.FC<AIChatModalProps> = ({
                 <span className="w-2 h-2 rounded-full bg-amber-400 animate-bounce" style={{ animationDelay: '0ms' }} />
                 <span className="w-2 h-2 rounded-full bg-amber-400 animate-bounce" style={{ animationDelay: '150ms' }} />
                 <span className="w-2 h-2 rounded-full bg-amber-400 animate-bounce" style={{ animationDelay: '300ms' }} />
-                <span className="text-[11px] text-slate-400 ml-1 font-medium">Ember AI is thinking...</span>
+                <span className="text-[11px] text-slate-400 ml-1 font-medium">Kio is thinking...</span>
               </div>
             </div>
           )}
@@ -464,7 +464,7 @@ export const AIChatModal: React.FC<AIChatModalProps> = ({
             type="text"
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
-            placeholder="Ask Ember AI (e.g. Signature foods, top ratings, opening hours)..."
+            placeholder="Ask Kio (e.g. Signature foods, top ratings, opening hours)..."
             className="flex-1 bg-slate-900 border border-white/10 focus:border-amber-400/60 rounded-2xl px-4 py-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-hidden focus:ring-1 focus:ring-amber-400/40 transition-all"
           />
 

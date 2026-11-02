@@ -7,7 +7,9 @@ import {
   Sun,
   Moon,
   ConciergeBell,
-  Sparkles
+  Sparkles,
+  Bot,
+  MessageSquare
 } from 'lucide-react';
 import royalEmberLogo from '../../assets/royal_ember_logo.jpg';
 import { getAssignedWaiter } from '../../utils/waiterAssignment';
@@ -124,16 +126,26 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="text-xs font-black text-amber-300">{assignedWaiter.fullName}</span>
           </div>
 
-          {/* Ember AI Concierge Trigger */}
+          {/* Kio AI Chatbox Trigger Button */}
           {onOpenAIChat && (
             <button
               type="button"
               onClick={onOpenAIChat}
-              className="flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-full bg-gradient-to-r from-amber-500/15 via-yellow-500/10 to-amber-500/15 hover:bg-amber-500/25 border border-amber-400/40 text-amber-300 shadow-sm active:scale-95 transition-all cursor-pointer shrink-0"
-              title="Ask Ember AI Concierge (Signatures, Ratings, Timings)"
+              className="relative flex items-center gap-2 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full bg-gradient-to-r from-violet-600 via-indigo-600 to-amber-500 hover:from-violet-500 hover:to-amber-400 text-white shadow-[0_0_15px_rgba(139,92,246,0.4)] active:scale-95 transition-all cursor-pointer border border-white/20 group shrink-0"
+              title="Chat with Kio AI (Signatures, Ratings, Timings)"
+              aria-label="Open Kio AI Chatbox"
             >
-              <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
-              <span className="text-xs font-black tracking-wide">Ember AI</span>
+              <div className="relative flex items-center justify-center w-6 h-6 rounded-full bg-white text-indigo-700 shadow-sm shrink-0">
+                <Bot className="w-3.5 h-3.5 stroke-[2.5]" />
+                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400" />
+              </div>
+              <div className="flex items-center gap-1.5 leading-none">
+                <span className="text-xs font-black tracking-wide text-white">Kio</span>
+                <span className="px-1.5 py-0.5 rounded-full bg-black/30 text-[9px] font-black uppercase tracking-wider text-amber-300 border border-amber-300/30">
+                  AI Chat
+                </span>
+              </div>
             </button>
           )}
 

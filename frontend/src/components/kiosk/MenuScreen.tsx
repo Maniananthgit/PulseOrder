@@ -23,7 +23,9 @@ import {
   Star,
   Zap,
   Heart,
-  Sparkles
+  Sparkles,
+  Bot,
+  MessageSquare
 } from 'lucide-react';
 import { PromoAdBanner } from './PromoAdBanner';
 import { getAssignedWaiter } from '../../utils/waiterAssignment';
@@ -613,16 +615,33 @@ export const MenuScreen: React.FC<MenuScreenProps> = ({
       {/* 7. FLOATING QUICK ACTION DOCK (Show Only Bottom - "its perfect place") */}
       <aside aria-label="Quick Actions Dock" className="fixed bottom-6 right-6 z-40 flex items-center gap-2 p-1.5 sm:p-2 rounded-full bg-slate-950/95 dark:bg-slate-900/95 backdrop-blur-md border border-amber-500/30 shadow-[0_10px_35px_rgba(0,0,0,0.4)] animate-fade-in select-none">
         
-        {/* Ember AI Concierge Floating Button */}
+        {/* Kio AI Chatbox Floating Launcher */}
         {onOpenAIChat && (
           <button
             type="button"
             onClick={onOpenAIChat}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-amber-500/20 hover:from-amber-500/30 hover:to-yellow-500/30 text-amber-300 border border-amber-400/40 transition-all active:scale-95 cursor-pointer shadow-md shadow-amber-500/10"
-            title="Ask Ember AI Concierge about Signatures, Ratings, Shop Timings"
+            className="relative flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-full text-xs font-black bg-gradient-to-r from-violet-600 via-indigo-600 to-amber-500 text-white border border-white/30 shadow-[0_4px_25px_rgba(139,92,246,0.6)] hover:shadow-[0_6px_30px_rgba(245,158,11,0.6)] hover:scale-105 active:scale-95 transition-all cursor-pointer group"
+            title="Chat with Kio AI - Ask about Signatures, Ratings & Shop Timings"
+            aria-label="Open Kio AI Chatbox"
           >
-            <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
-            <span className="font-extrabold">Ember AI</span>
+            {/* Ambient Pulse Glow */}
+            <span className="absolute -inset-0.5 rounded-full bg-gradient-to-r from-violet-500 to-amber-400 blur-xs opacity-75 group-hover:opacity-100 transition-opacity animate-pulse" />
+            
+            {/* High-Tech Robot Avatar Icon with Online Beacon */}
+            <div className="relative flex items-center justify-center w-6 h-6 rounded-full bg-white text-indigo-700 shadow-md shrink-0">
+              <Bot className="w-4 h-4 stroke-[2.5]" />
+              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400" />
+            </div>
+
+            {/* Unmistakable AI Chatbox Label */}
+            <div className="relative flex items-center gap-1.5 leading-none">
+              <span className="font-black text-white text-xs tracking-wide">Kio</span>
+              <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-black/40 text-[9px] font-black uppercase tracking-wider text-amber-300 border border-amber-300/40">
+                <MessageSquare className="w-2.5 h-2.5" />
+                <span>AI Chat</span>
+              </span>
+            </div>
           </button>
         )}
 
