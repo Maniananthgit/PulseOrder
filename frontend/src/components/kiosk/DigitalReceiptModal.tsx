@@ -226,17 +226,16 @@ export const DigitalReceiptModal: React.FC<DigitalReceiptModalProps> = ({
         <div className="p-4 sm:p-5 bg-slate-900 border-t border-white/[0.08] flex flex-col gap-2.5 shrink-0">
           
           {/* Status banner */}
-          {!isConfirmed ? (
-            <div className="flex items-center gap-2 p-2.5 rounded-xl bg-amber-400/10 border border-amber-400/30 text-[11px] text-amber-300">
-              <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping shrink-0" />
-              <span>Ticket dispatched to Kitchen! Awaiting Chef or <strong>Waiter {waiter.name}</strong> confirmation...</span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2 p-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-[11px] text-emerald-300 animate-in fade-in">
-              <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-              <span>Order confirmed in Kitchen! Moving to Preparing — <strong>Live Kitchen Progress</strong> is active.</span>
-            </div>
-          )}
+          <div className="flex items-center gap-2 p-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-[11px] text-emerald-300">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+            <span>
+              {isConfirmed ? (
+                <>Order confirmed in Kitchen! Moving to Preparing — <strong>Live Kitchen Progress</strong> is active.</>
+              ) : (
+                <>Ticket dispatched to Kitchen! Attendant: <strong>Waiter {waiter.name}</strong> • Live Kitchen Tracker is active.</>
+              )}
+            </span>
+          </div>
 
           <div className="flex items-center justify-between gap-3">
             <button
@@ -247,24 +246,17 @@ export const DigitalReceiptModal: React.FC<DigitalReceiptModalProps> = ({
               Close
             </button>
 
-            {isConfirmed ? (
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  onTrackOrder();
-                }}
-                className="flex-1 py-3 px-5 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-600 hover:from-emerald-400 hover:to-teal-300 text-slate-950 text-xs font-black shadow-lg shadow-emerald-500/25 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer animate-in zoom-in-95"
-              >
-                <Clock className="w-4 h-4 text-slate-950" />
-                <span>Live Kitchen Progress →</span>
-              </button>
-            ) : (
-              <div className="flex-1 py-3 px-4 rounded-2xl bg-slate-800 text-slate-400 text-xs font-semibold border border-white/5 flex items-center justify-center gap-2 cursor-default select-none">
-                <Clock className="w-4 h-4 animate-spin text-amber-400" />
-                <span>Syncing with Kitchen Line...</span>
-              </div>
-            )}
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                onTrackOrder();
+              }}
+              className="flex-1 py-3 px-5 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-600 hover:from-emerald-400 hover:to-teal-300 text-slate-950 text-xs font-black shadow-lg shadow-emerald-500/25 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer hover:shadow-emerald-500/40"
+            >
+              <Clock className="w-4 h-4 text-slate-950" />
+              <span>Live Kitchen Progress →</span>
+            </button>
           </div>
 
         </div>

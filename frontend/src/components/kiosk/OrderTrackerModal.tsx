@@ -125,13 +125,11 @@ export const OrderTrackerModal: React.FC<OrderTrackerModalProps> = ({
     return () => clearInterval(interval);
   }, [activeOrder?.createdAt, activeOrder?.estimatedPrepTime, activeOrder?.status, activeOrder?.id]);
 
-  if (!isOpen || !activeOrder) return null;
-
   // Kitchen supervisor extra delay clock (5 minutes default set by kitchen)
   const [delaySecondsLeft, setDelaySecondsLeft] = useState<number>(300);
 
   useEffect(() => {
-    if (secondsLeft === 0 && activeOrder.status !== 'READY' && activeOrder.status !== 'COMPLETED') {
+    if (secondsLeft === 0 && activeOrder?.status !== 'READY' && activeOrder?.status !== 'COMPLETED') {
       const timer = setInterval(() => {
         setDelaySecondsLeft((prev) => (prev > 0 ? prev - 1 : 0));
       }, 1000);
@@ -139,7 +137,9 @@ export const OrderTrackerModal: React.FC<OrderTrackerModalProps> = ({
     } else {
       setDelaySecondsLeft(300);
     }
-  }, [secondsLeft, activeOrder.status]);
+  }, [secondsLeft, activeOrder?.status]);
+
+  if (!isOpen || !activeOrder) return null;
 
   const delayMins = Math.floor(delaySecondsLeft / 60);
   const delaySecs = delaySecondsLeft % 60;
@@ -162,7 +162,7 @@ export const OrderTrackerModal: React.FC<OrderTrackerModalProps> = ({
       isVeg: true
     };
 
-    const updatedItems = [...activeOrder.items, compItem];
+    const updatedItems = [...(activeOrder.items || []), compItem];
     const newPrepTime = (activeOrder.estimatedPrepTime || 12) + 5;
 
     updateOrder(activeOrder.id, {
@@ -275,7 +275,7 @@ export const OrderTrackerModal: React.FC<OrderTrackerModalProps> = ({
                 </span>
                 <span className="text-xs text-slate-500">•</span>
                 <span className="text-xs font-semibold text-slate-300">
-                  {activeOrder.items.reduce((a, b) => a + b.quantity, 0)} {activeOrder.items.reduce((a, b) => a + b.quantity, 0) === 1 ? 'Dish' : 'Dishes'}
+                  {(activeOrder.items || []).reduce((a, b) => a + (b.quantity || 1), 0)} {(activeOrder.items || []).reduce((a, b) => a + (b.quantity || 1), 0) === 1 ? 'Dish' : 'Dishes'}
                 </span>
                 {allOrders.length > 1 && (
                   <span className="text-[10px] font-bold bg-amber-500/15 text-amber-300 px-2 py-0.5 rounded-full border border-amber-500/30">
@@ -746,7 +746,7 @@ export const OrderTrackerModal: React.FC<OrderTrackerModalProps> = ({
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-black uppercase tracking-wider text-slate-400">
-                Dishes in Order #{activeOrder.orderNumber} ({activeOrder.items.length})
+                Dishes in Order #{activeOrder.orderNumber} ({(activeOrder.items || []).length})
               </span>
               <span className="text-xs font-bold text-amber-400 font-display">
                 Total ₹{activeOrder.total}
@@ -754,7 +754,7 @@ export const OrderTrackerModal: React.FC<OrderTrackerModalProps> = ({
             </div>
 
             <div className="divide-y divide-white/[0.06] border border-white/[0.08] rounded-2xl overflow-hidden bg-slate-850/50">
-              {activeOrder.items.map((item) => (
+              {(activeOrder.items || []).map((item) => (
                 <div key={item.cartItemId} className="p-3 flex items-center justify-between text-xs hover:bg-white/[0.02] transition-colors">
                   <div className="flex items-center gap-3">
                     <img src={item.image} alt={item.name} className="w-11 h-11 rounded-xl object-cover border border-white/10" />
