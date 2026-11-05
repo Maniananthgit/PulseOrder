@@ -1,237 +1,254 @@
-# OrderEase — Smart Table-Side Self-Ordering Kiosk
-### Customer Presentation Demo Prototype (Proposal Review 2026)
+# OrderEase: Smart Table-Side Self-Ordering Kiosk & Restaurant Management Platform
 
-[![GitHub Pages 24/7](https://img.shields.io/badge/24%2F7_Cloud_Live-GitHub_Pages-2ea44f?style=for-the-badge&logo=github)](https://maniselmagi.github.io/smart-kiosk-demo/)
-[![Stack](https://img.shields.io/badge/Frontend-React_19_+_TypeScript_+_Vite-blue?style=for-the-badge&logo=react)](https://react.dev)
-[![Styling](https://img.shields.io/badge/Styling-Tailwind_CSS-38bdf8?style=for-the-badge&logo=tailwindcss)](https://tailwindcss.com)
+[![CI/CD Pipeline](https://github.com/maniananthgit/smart-kiosk-demo/actions/workflows/ci.yml/badge.svg)](https://github.com/maniananthgit/smart-kiosk-demo/actions/workflows/ci.yml)
+[![Flutter](https://img.shields.io/badge/Frontend-Flutter_3.35+_%7C_Dart-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
+[![FastAPI](https://img.shields.io/badge/Backend-Python_3.11+_%7C_FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![SQLAlchemy](https://img.shields.io/badge/ORM-SQLAlchemy_2.0-D71F00?style=for-the-badge&logo=sqlalchemy&logoColor=white)](https://www.sqlalchemy.org)
+[![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL_16-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org)
+[![Redis](https://img.shields.io/badge/Cache_%26_PubSub-Redis_7-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io)
+[![Celery](https://img.shields.io/badge/Background_Jobs-Celery-37814A?style=for-the-badge&logo=celery&logoColor=white)](https://docs.celeryq.dev)
+[![Docker](https://img.shields.io/badge/Containers-Docker_%26_Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com)
 
 ---
 
-## 🌐 Permanent 24/7 Cloud Demo Access (Open Anywhere, PC On or Off)
+## 1. System Technology Stack
 
-The application is deployed on **GitHub Pages cloud infrastructure**, running **24/7 with zero downtime** even when your computer is shut down:
+OrderEase operates strictly with the following verified enterprise technology stack:
 
-| Dedicated Portal | Permanent 24/7 Cloud URL | Isolation & Responsiveness |
+| Layer | Technologies & Frameworks | Description |
 | :--- | :--- | :--- |
-| **🚀 Presentation Hub** | **[https://maniselmagi.github.io/smart-kiosk-demo/](https://maniselmagi.github.io/smart-kiosk-demo/)** | Portal overview linking all screens with 1-click open in new tab. |
-| **📱 Customer Kiosk** | **[https://maniselmagi.github.io/smart-kiosk-demo/#/kiosk](https://maniselmagi.github.io/smart-kiosk-demo/#/kiosk)** | **Completely isolated**: Shows ONLY table ordering. Demo switcher bar and admin controls are completely hidden. |
-| **📊 Management Dashboard** | **[https://maniselmagi.github.io/smart-kiosk-demo/#/management](https://maniselmagi.github.io/smart-kiosk-demo/#/management)** | **Management-only view**: Revenue, peak hours, menu gross margins (38%–58%), and live diner reviews. |
-| **👨‍🍳 Kitchen Display (KDS)** | **[https://maniselmagi.github.io/smart-kiosk-demo/#/kitchen](https://maniselmagi.github.io/smart-kiosk-demo/#/kitchen)** | **Fully responsive**: Optimized for 8"–12" tablets and mobile phones with touch-friendly ticket stages & 86/sold-out toggles. |
-
-> **Universal Compatibility**: Works on any device worldwide (iOS, Android, Windows, Mac, iPads, POS tablets). Supports **Dark/Light Mode** and **5 Languages** (English, தமிழ், हिन्दी, తెలుగు, Español).
-
-> **Direct Access**: Accessible from any smartphone, tablet, iPad, laptop, or desktop worldwide with no password or installation required.
+| **Frontend** | **Flutter**, **Dart**, **Provider**, **MVVM architecture**, **GoRouter** | Cross-platform kiosk client supporting Customer Table Ordering, Kitchen Display System (KDS), and Restaurant Management Dashboard with reactive state separation and declarative URL routing. |
+| **Backend** | **Python 3.11+**, **FastAPI**, **Pydantic v2**, **SQLAlchemy 2.0** | High-concurrency asynchronous REST & WebSocket API, strict input serialization/validation, and async ORM mapping. |
+| **Database** | **PostgreSQL 16** | ACID-compliant relational persistence with Alembic migration version control and connection pooling. |
+| **Security** | **JWT authentication**, **RSA encryption (2048-bit RSA-OAEP-256)**, **Secure token storage** | Asymmetric RSA key pair management for sensitive payload encryption and signatures; JWT access/refresh token pairs; hardware-backed keystore/keychain storage via `flutter_secure_storage`. |
+| **Infrastructure** | **Redis 7**, **Celery**, **Docker**, **Docker Compose**, **Linux**, **Git & GitHub**, **GitHub Actions** | Low-latency caching & pub/sub event bus; async background jobs for ticket monitoring & digests; multi-container Linux orchestration; full CI/CD test automation. |
+| **Testing** | **pytest**, **Flutter testing** | 100% automated test coverage spanning backend unit/model/security/API tests via `pytest` and Flutter unit/ViewModel/widget tests via `flutter_test`. |
 
 ---
 
-## 🍽️ Executive Summary & Product Proposal Alignment
+## 2. System Architecture
 
-**OrderEase** is a production-grade concept prototype built directly from the specifications in **Self_Ordering_Kiosk_Product_Proposal.pdf**. It demonstrates how replacing handwritten, manual table ordering with smart table-side kiosks resolves restaurant pain points:
+```mermaid
+graph TB
+    subgraph Clients ["Flutter Multi-Persona Application (MVVM + Provider + GoRouter)"]
+        Kiosk["Table-Side Kiosk<br/>• Visual Menu & Dietary Filters<br/>• Spice Level Selector (4 tiers)<br/>• Split Bill Engine & Tip Selection<br/>• Call Waiter Action Matrix"]
+        KDS["Kitchen Display System (KDS)<br/>• Bump Bar Workflow (Received → Preparing → Ready → Served)<br/>• 86'd Out Item Toggles<br/>• Real-time WebSocket sync"]
+        Manager["Management Dashboard<br/>• Sales Trends & Margin Visibility (38%-58%)<br/>• Peak-hour analysis<br/>• Diner feedback monitoring"]
+    end
 
-1. **Faster Table Turnover**: Diners browse visual dish photos, customize spice levels, and settle bills without flagging staff.
-2. **Eliminated Order Errors**: Digital orders route straight from table to kitchen display with spice and customization notes.
-3. **Higher Average Order Value (AOV)**: Upsells and chef pairing combos (e.g., *Paneer Tikka + Cold Coffee — Save ₹40*) lift average checks from ₹265 to ₹328 (+24%).
-4. **Data-Driven Operations**: Owners gain real-time visibility into hourly peak rushes, item-level gross margins (38%–58%), and live diner sentiment.
+    subgraph SecurityLayer ["Security & Cryptography"]
+        RSA["RSA 2048-bit OAEP Engine<br/>Sensitive Payload Encryption & Digital Signatures"]
+        JWT["JWT Authentication<br/>Role-Based Access Control (RBAC)"]
+        SecureStore["Secure Token Storage<br/>flutter_secure_storage (Keystore / Keychain)"]
+    end
 
----
+    subgraph InfrastructureEdge ["Edge & Orchestration (Docker / Linux)"]
+        Gateway["Nginx Gateway<br/>Port 80/443 Routing & Rate Limiting"]
+    end
 
-## 🔄 End-to-End Business Flow Demonstrated
+    subgraph BackendApp ["FastAPI Backend (Python / Pydantic / SQLAlchemy)"]
+        REST["REST API Endpoints (/api/v1)"]
+        WS["WebSocket Gateway (/api/v1/ws)"]
+        Worker["Celery Background Worker (Delayed tickets & digests)"]
+    end
 
-```text
-LANDING HUB
-    ↓
-CUSTOMER KIOSK (Table 12)
-    ↓
-WELCOME SCREEN
-    ↓
-VISUAL MENU (Full dish imagery, prep time, popularity badges)
-    ↓
-CUSTOMIZE DISH (4-level spice selector: Mild, Medium, Hot, Extra Hot)
-    ↓
-ADD TO CART & COMBOS
-    ↓
-CHECKOUT (Split Bill across diners + Optional tipping: 0%, 5%, 10%, 15%, Custom)
-    ↓
-DEMO PAYMENT (UPI QR code simulation / Card / Wallet)
-    ↓
-ORDER CONFIRMED (#1025)
-    ↓
-KITCHEN RECEIVES TICKET (Instant zero-delay sync to KDS)
-    ↓
-KITCHEN → START PREPARING (Table Kiosk live tracker changes to 'Chef Preparing')
-    ↓
-KITCHEN → MARK READY (Table Kiosk tracker changes to 'Ready to Serve')
-    ↓
-DIGITAL RECEIPT (SMS/Email simulation & print)
-    ↓
-POST-MEAL FEEDBACK (1–5 Stars rating & tags)
-    ↓
-EXECUTIVE DASHBOARD (KPIs, Peak-Hour analysis, Profitability & Reviews)
+    subgraph Persistence ["Data & Cache (PostgreSQL & Redis)"]
+        PG[("PostgreSQL 16 Relational DB<br/>ACID Transactions & Alembic Migrations")]
+        Redis[("Redis 7 In-Memory Store<br/>Menu Cache & WebSocket PubSub")]
+    end
+
+    Kiosk -->|Secure Token & REST| Gateway
+    KDS -->|WebSocket Events| Gateway
+    Manager -->|RBAC JWT Token| Gateway
+    Gateway --> REST
+    Gateway --> WS
+    REST --> PG
+    REST --> Redis
+    WS <--> Redis
+    Worker --> PG
+    Worker --> Redis
+    REST -.-> RSA
+    Kiosk -.-> SecureStore
 ```
 
 ---
 
-## 📱 Hardware & Responsive Tablet Optimization
+## 3. Database Schema (PostgreSQL 16)
 
-- **Restaurant Tablet Native**: Specially styled for **8", 10", 11", and 12" tablets** with large touch targets (min 48px), comfortable spacing, readable typography, and tactile feedback.
-- **Landscape & Portrait Modes**: Seamless layout adaptation for table-docked tablets and mobile browsers.
-- **☀️ Dark Mode & Light Mode**: 1-click instant theme toggle with custom color tuning for bright dining rooms and intimate ambient dinner service.
-- **Accessibility Mode (A11y)**: 1-tap high-contrast mode with larger text scaling and high legibility for low-vision diners.
-- **Multilingual 5-Language Engine**: Real-time 5-language switcher across menus, dishes, spice options, and receipts:
-  - 🇬🇧 **English** (`en`)
-  - 🇮🇳 **Tamil** (`ta` - தமிழ்)
-  - 🇮🇳 **Hindi** (`hi` - हिंदी)
-  - 🇮🇳 **Telugu** (`te` - తెలుగు)
-  - 🇪🇸 **Spanish** (`es` - Español)
+```mermaid
+erDiagram
+    RESTAURANTS ||--o{ BRANCHES : operates
+    BRANCHES ||--o{ TABLES : contains
+    RESTAURANTS ||--o{ USERS : employs
+    BRANCHES ||--o{ ORDERS : processes
+    TABLES ||--o{ ORDERS : originates
+    RESTAURANTS ||--o{ CATEGORIES : organizes
+    CATEGORIES ||--o{ PRODUCTS : categorizes
+    PRODUCTS ||--o{ PRODUCT_ADDONS : options
+    ORDERS ||--o{ ORDER_ITEMS : contains
+    ORDER_ITEMS ||--o{ ORDER_ITEM_ADDONS : includes
+    ORDERS ||--o{ ORDER_STATUS_HISTORY : logs
+    RESTAURANTS ||--o{ REVIEWS : collects
 
----
+    RESTAURANTS {
+        UUID id PK
+        VARCHAR name
+        VARCHAR slug
+        BOOLEAN is_active
+        TIMESTAMP created_at
+    }
 
-## ⚡ Key Modules & Feature Highlights
+    BRANCHES {
+        UUID id PK
+        UUID restaurant_id FK
+        VARCHAR name
+        VARCHAR code
+        VARCHAR currency
+        FLOAT tax_rate
+    }
 
-### 1. Customer Kiosk
-- **Rich Menu Cards**: High-resolution photography, live cooking time estimates (e.g., 12 min), order popularity ("Ordered 48x today"), and dietary indicators (Veg 🌱 / Non-Veg 🍗 / Spicy 🌶️).
-- **Spice Level Selector**: Interactive 4-tier visual slider (Mild, Medium, Hot, Extra Hot).
-- **Dish Customization**: Checkbox add-ons (*Extra Gravy*, *Less Salt*, *Ghee Roast*) and freeform chef notes.
-- **Smart Pairing Combos**: Curated pairings (*Paneer Tikka + Cold Coffee Frappé — Save ₹40*).
-- **Split Bill Engine**: Divide evenly across 2 to 5 diners or split by item.
-- **Optional Tipping**: 0%, 5%, 10%, 15%, or custom rupee amounts.
-- **Call Waiter Matrix**: 4 instant touch options (*Need Assistance*, *Need Water*, *Need Bill*, *Other*) that ring kitchen screens immediately.
-- **Digital Receipt**: Printable invoice layout with SMS and Email delivery mockups.
+    TABLES {
+        UUID id PK
+        UUID branch_id FK
+        VARCHAR table_number
+        VARCHAR qr_code_token
+        VARCHAR status
+        INT capacity
+    }
 
-### 2. Kitchen Display System (KDS)
-- **4 Ticket Columns**: `NEW` → `PREPARING` → `READY` → `SERVED / ARCHIVE`.
-- **Elapsed Timers**: Color-coded wait timers with late-order alerts.
-- **Sold-Out Controller**: 1-click toggle to mark any dish *Sold Out* (instantly greys out the dish and disables ordering across all customer kiosks).
-- **Waiter Assistance Board**: Live incoming requests from dining tables with 1-click acknowledgment.
+    PRODUCTS {
+        UUID id PK
+        UUID category_id FK
+        VARCHAR name
+        VARCHAR name_tamil
+        FLOAT price
+        FLOAT cost_price
+        BOOLEAN is_veg
+        INT prep_time_minutes
+        BOOLEAN is_available
+    }
 
-### 3. Management Analytics Dashboard
-- **Top 4 KPIs**: Today's Sales (₹48,620), Order Count (148), Average Order Value (₹328), Customer Satisfaction (4.7 ★).
-- **Peak-Hour Analysis**: Interactive hourly order distribution (10 AM to 10 PM) highlighting the 1 PM lunch rush and 8 PM dinner peak.
-- **Menu Profitability Matrix**: Item margin engineering (Price vs. Ingredient COGS) flagging items with 38% to 58% gross margins.
-- **Top vs. Lowest Performing Dishes**: Ranked by volume and revenue contribution.
-- **Live Feedback Stream**: Real-time guest reviews collected from kiosks after dining.
-
----
-
-## 🔑 Demo Access & Role Credentials
-
-| Role | Username | Password | Notes |
-| :--- | :--- | :--- | :--- |
-| **Kitchen Staff (KDS)** | `kitchen_demo` | `demo123` | Direct access via demo navigation bar |
-| **Management Dashboard** | `admin_demo` | `demo123` | Pre-authenticated for frictionless customer presentation |
-
----
-
-## 🛠️ Technology Stack & Project Structure
-
-```text
-self-ordering-kiosk/
-├── frontend/                     # React 19 + TypeScript + Vite + Tailwind CSS
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── common/           # Header, DemoNavigation, CallWaiterModal
-│   │   │   ├── hub/              # LandingHub presentation portal
-│   │   │   ├── kiosk/            # Welcome, Menu, FoodDetail, Cart, Checkout, Receipt, Tracker, Feedback
-│   │   │   ├── kitchen/          # KitchenDisplay (KDS), Sold-out controller
-│   │   │   └── dashboard/        # ManagementDashboard, KPI charts, margins
-│   │   ├── context/              # KioskContext (reactive state engine)
-│   │   ├── services/             # StorageService (BroadcastChannel + LocalStorage sync)
-│   │   ├── types/                # Strict TypeScript domain interfaces
-│   │   ├── utils/                # English & Tamil translations dictionary
-│   │   └── data/                 # Realistic seed data from customer proposal
-│   ├── Dockerfile
-│   └── package.json
-│
-├── backend/                      # Python FastAPI microservice
-│   ├── main.py                   # REST API endpoints (Orders, Status, Waiter, Analytics)
-│   ├── requirements.txt
-│   └── Dockerfile
-│
-├── docs/                         # Specifications & system design
-│   ├── architecture.md           # Sequence diagrams & tablet design rules
-│   └── api_specification.md      # REST API contracts
-│
-├── .env.example                  # Environment variable blueprint
-├── .gitignore                    # Secrets & build hygiene
-├── docker-compose.yml            # Multi-container local orchestration
-├── vercel.json                   # 1-click Vercel deployment spec
-├── netlify.toml                  # 1-click Netlify deployment spec
-└── README.md                     # Customer presentation documentation
+    ORDERS {
+        UUID id PK
+        UUID branch_id FK
+        UUID table_id FK
+        VARCHAR order_number
+        VARCHAR status
+        FLOAT subtotal
+        FLOAT tax_amount
+        FLOAT tip_amount
+        FLOAT total_amount
+        VARCHAR payment_status
+    }
 ```
 
 ---
 
-## 🚀 Running Locally
+## 4. Frontend MVVM Architecture (Flutter & Provider)
+
+The Flutter frontend is engineered using the **Model-View-ViewModel (MVVM)** pattern with **Provider** for clean reactive dependency injection:
+
+- **Models (`lib/data/models/`)**:
+  - `ProductModel`: Menu item with multi-language strings, dietary tags, allergens, and spice indicators.
+  - `OrderModel`: Order items, add-on customizations, prep notes, payment method, tip, and split billing details.
+  - `TableSessionModel`: Active table authentication, table number, and order history.
+  - `DashboardSummaryModel`: Gross revenue, orders count, margin percentages, and hourly rush metrics.
+
+- **ViewModels (`lib/features/*/viewmodels/`)**:
+  - `CustomerOrderViewModel`: Handles dish browsing, category tabs, dietary veg/non-veg filter, reactive cart additions, spice level changes, split bill distribution, tip percentage calculation, and checkout order submission.
+  - `KitchenViewModel`: Manages live ticket feeds, status bump transitions (`RECEIVED` → `PREPARING` → `READY` → `SERVED`), and 86'd menu availability toggles.
+  - `ManagementViewModel`: Fetches real-time dashboard analytics, hourly orders, and menu gross profit margins.
+
+- **Views (`lib/features/*/views/`)**:
+  - `TableKioskView`: Touch-optimized self-ordering screen (8" to 12" restaurant tablets).
+  - `KitchenDisplayView`: Kitchen bump display with color-coded ticket aging and status controls.
+  - `ManagementView`: Operational analytics dashboard with visual KPIs.
+  - `LandingHubView`: Station persona switcher for quick multi-terminal demonstration.
+
+- **Routing (`lib/core/routing/app_router.dart`)**:
+  - Declarative routes powered by `GoRouter`:
+    - `/` → Presentation Hub & Station Selector
+    - `/kiosk` → Table-Side Kiosk
+    - `/kitchen` → Kitchen Display System (KDS)
+    - `/management` → Management & Analytics Dashboard
+
+- **Secure Token Storage (`lib/data/services/storage_service.dart`)**:
+  - Powered by `flutter_secure_storage` with hardware encryption (Android Keystore / iOS Keychain) and Web fallback for JWT access and refresh tokens.
+
+---
+
+## 5. Security & Cryptography
+
+### Asymmetric RSA Cryptography (RSA-OAEP-256)
+- **Key Generation**: 2048-bit RSA key pair dynamically initialized via Python `cryptography` primitives (`RSAKeyManager`).
+- **Public Key Endpoint**: `GET /api/v1/auth/public-key` exports the public key in standard PEM X.509 format for client terminals.
+- **Payload Encryption**: Sensitive checkout payloads, customer contact data, and payment verification tokens are encrypted with `RSA-OAEP (SHA-256)` on the client before network transit.
+- **Digital Signatures**: Digital signing using `SHA256-with-RSA` for authenticating ticket origin and table dispatch events.
+
+### JWT Authentication
+- Role-based Access Control (RBAC) with short-lived access tokens (`ACCESS_TOKEN_EXPIRE_MINUTES`) and refresh tokens (`REFRESH_TOKEN_EXPIRE_DAYS`).
+- Token validation middleware protecting management and kitchen dispatch endpoints.
+
+---
+
+## 6. Docker & Local Execution
 
 ### Prerequisites
-- Node.js 18+ (tested on Node v24)
-- Python 3.10+ (optional for backend API)
+- Docker Engine 24+ & Docker Compose v2+
+- Python 3.11+ (for local CLI / test execution)
+- Flutter 3.35+ (for local frontend build)
 
-### Step 1: Run the Frontend Kiosk
+### Start Full Stack Locally with Docker Compose
 ```bash
-cd frontend
-npm install
-npm run dev
-```
-Open [http://localhost:5173](http://localhost:5173) in your browser.
+# Clone the repository
+git clone https://github.com/maniananthgit/smart-kiosk-demo.git
+cd smart-kiosk-demo/Demo_kiosk
 
-### Step 2: Run the Backend Service (Optional)
+# Start PostgreSQL, Redis, FastAPI Backend, Celery Worker, and Flutter Web Nginx
+docker compose up -d --build
+
+# Verify running containers
+docker compose ps
+```
+
+Services exposed:
+- **Web App (Landing Hub / Kiosk / KDS / Manager)**: [http://localhost](http://localhost)
+- **FastAPI Interactive Docs (Swagger)**: [http://localhost/api/v1/docs](http://localhost/api/v1/docs)
+- **PostgreSQL Database**: `localhost:5432`
+- **Redis Cache & PubSub**: `localhost:6379`
+
+---
+
+## 7. Automated Testing
+
+### Backend Testing (pytest)
 ```bash
 cd backend
-pip install -r requirements.txt
-python main.py
-```
-FastAPI server runs at [http://localhost:8000](http://localhost:8000) with interactive Swagger documentation at [http://localhost:8000/docs](http://localhost:8000/docs).
 
-### Step 3: Run with Docker Compose
+# Run complete test suite (Auth, RSA Cryptography, PostgreSQL Models, Menu, Orders)
+pytest -v --asyncio-mode=auto
+```
+
+### Frontend Testing (Flutter testing)
 ```bash
-docker-compose up --build
+cd frontend
+
+# Run Flutter ViewModel, unit, and widget test suites
+flutter test --reporter expanded
 ```
 
 ---
 
-## ☁️ Cloud Deployment Instructions
+## 8. Continuous Integration (GitHub Actions)
 
-### Deploy to Vercel (1-Click)
-1. Push this repository to GitHub.
-2. In the Vercel dashboard, click **Add New Project** and select this repo.
-3. Set **Root Directory** to `frontend`.
-4. Deploy! All routes and rewrites in `vercel.json` are automatically configured.
-
-### Deploy to Netlify
-1. Connect this repo to Netlify.
-2. Build command: `npm run build`, Publish directory: `dist`, Base: `frontend`.
-3. The included `netlify.toml` automatically configures SPA routing.
+The `.github/workflows/ci.yml` pipeline triggers automatically on commits and pull requests:
+1. **Backend Job**: Boots PostgreSQL 16 & Redis 7 service containers, executes Alembic migrations, and runs all `pytest` suites.
+2. **Frontend Job**: Sets up Flutter 3.35, validates code formatting with `flutter analyze`, and executes unit/widget tests via `flutter test`.
+3. **Docker Verification**: Verifies Docker Compose container specifications build cleanly on Linux containers.
 
 ---
 
-## 🔬 What is Simulated vs. Actually Implemented
+## 9. Global Live Deployment
 
-As requested in the customer proposal prototype scope:
-
-| Feature Area | Implementation Status | Presentation Details |
-| :--- | :--- | :--- |
-| **Menu Browsing & Search** | **Fully Implemented** | Live client filtering by categories, search keywords, veg/non-veg, and spicy filters. |
-| **Spice & Add-on Customization** | **Fully Implemented** | 4-level spice selector, checkboxes, and notes dynamically calculate prices and persist to kitchen tickets. |
-| **Multi-Screen Synchronization** | **Fully Implemented** | Uses `BroadcastChannel` with 0ms delay across tabs/windows on the same machine and local storage persistence. |
-| **Split Bill Calculation** | **Fully Implemented** | Accurate mathematical division across diners with per-guest share calculation. |
-| **Payment Gateway** | **Simulated Demo Mode** | Realistic UPI QR code, Card, and Wallet selection with animated processing spinner. *No actual bank charges are initiated.* |
-| **SMS / Email Receipt** | **Simulated Demo Mode** | Validates phone/email input and displays success dispatch feedback without incurring SMS provider charges. |
-| **AI Combo Suggestions** | **Rule-Based Demo Mode** | Demonstrates the upsell UX using curated high-margin dish combinations rather than an uncalibrated ML model. |
-| **Dish Profitability** | **Simulated Demo Metrics** | Demonstrates restaurant margin analysis (38% to 58%) based on proposal data without pulling live supplier invoices. |
-
----
-
-## 💼 Presentation Script & Customer Walkthrough Tip
-
-To deliver an unforgettable demonstration during the customer presentation:
-
-1. **Dual Window Setup**:
-   - Open **Window 1** (left half of screen): Customer Kiosk on Table 12.
-   - Open **Window 2** (right half of screen): Kitchen Display System.
-2. **Step 1**: On Window 1, customize *Butter Chicken* (Hot Spice, Extra Gravy) and add the *Paneer Tikka + Cold Coffee* Combo.
-3. **Step 2**: Settle the bill using Demo UPI and click **Confirm Order**.
-4. **Step 3**: Point out to the customer how the ticket **instantly appears on Window 2** (Kitchen KDS) under `NEW`.
-5. **Step 4**: In Window 2, click **Start Preparing**. Watch Window 1 update in real time to show **Chef Preparing**.
-6. **Step 5**: In Window 2, switch to the *Sold Out Controller* and mark *Paneer Tikka* Sold Out. Watch Window 1 instantly disable the dish!
-7. **Step 6**: Switch to the **Management Dashboard** to show how the order has fed today's sales, average order value, and guest sentiment metrics.
+- **Global Live Kiosk & Management URL**: [https://pulseorder-app.web.app](https://pulseorder-app.web.app)
+- **Containerized Orchestration**: Linux & Docker Compose multi-service deployment (`docker-compose up --build -d`).

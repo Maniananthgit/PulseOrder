@@ -1,43 +1,46 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-# Dependencies
-node_modules/
-frontend/node_modules/
+# Python & Pytest
 __pycache__/
 *.py[cod]
 *$py.class
-.venv/
+*.so
+.Python
 env/
 venv/
+.venv/
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
 
-# Production Build Artifacts
-frontend/dist/
-frontend/dist-ssr/
-*.local
+# Flutter & Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+frontend/build/
+frontend/.dart_tool/
+frontend/.packages
+*.lock
 
-# Editor & OS files
-.vscode/
-.idea/
+# Environment & Secrets
+.env
+.env.local
+.env.production
+*.pem
+*.key
+*.cert
+
+# Operating System & IDE
 .DS_Store
 Thumbs.db
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+.idea/
+.vscode/
+*.swp
+.firebase/
 
-# Environment Secrets
-.env
-.env.production
-.env.local
-*.pem
-
-*.exe
-/smart_kiosk_app/
+# Docker & Database Volumes
+postgres_data/
+redis_data/
+*.log
